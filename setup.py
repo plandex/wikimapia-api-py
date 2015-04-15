@@ -23,7 +23,9 @@ setup(
     url='https://github.com/cybernetlab/wikimapia_api/',
     license='MIT',
     packages=['wikimapia_api'],
-    install_requires=['peppercorn'],
+    install_requires=[
+        'future'
+    ],
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Development Status :: 3 - Alpha',
