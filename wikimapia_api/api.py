@@ -2,83 +2,127 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+from future.utils import with_metaclass
+from future.moves.urllib.parse import urlparse, urlencode
+from past.builtins import basestring
+import http.client
+import time
+import json
+import zlib
 
-class WikimapiaApi(object):
-    def __init__(self, config=None):
-        if isinstance(config, WikimapiaConfig):
-            self.config = config
-        else:
-            self.config = WikimapiaConfig(config)
-        self.last_call = None
+from .config import Config
+from .errors import FunctionNameError, RequestError
 
-    def get_place_by_id(self, id, opts={}):
-        if 'data_blocks' not in opts:
-            opts['data_blocks'] = 'main,geometry,location'
-        return self.request('place.getbyid', {'id': id})
+# Workaround for python.future issue:
+# https://github.com/PythonCharmers/python-future/issues/137
+if not hasattr(http.client, 'OK'):
+    http.client.OK = 200
 
-    def get_place_by_area(self, x1, y1, x2, y2, opts={}):
-        opts['bbox'] = "{x1},{y1},{x2},{y2}".format(**locals())
-        if 'data_blocks' not in opts:
-            opts['data_blocks'] = 'main,geometry,location'
-        return WikimapiaIterator(self, 'place.getbyarea', 'places', opts)
+_RESERVED = ['config']
 
-    def get_categories(self, name=None):
-        opts = {}
-        if isinstance(name, basestring):
-            opts['name'] = name
-        return WikimapiaIterator(self, 'category.getall', 'categories', opts)
+class _APIMeta(type):
+    @property
+    def config(cls):
+        return cls._config
 
-    def get_category(self, id):
-        if not isinstance(id, (int, long)) or id <= 0:
-            return None
-        result = self.request('category.getbyid', {'id': str(id)})
-        if not isinstance(result, dict) or 'category' not in result:
-            return None
-        return result['category']
+    @config.setter
+    def config(cls, value):
+        if isinstance(value, Config):
+            cls._config = config
+        elif isinstance(value, dict):
+            cls._config = Config(**value)
 
-    def request(self, function, opts={}):
-        if not isinstance(self.config, WikimapiaConfig): return None
-        opts['key'] = self.config.api_key
-        opts['function'] = function
+    def __getattribute__(cls, name):
+        if name != '_api' and name in cls._api:
+            (api_class, api) = cls._api[name]
+            if not api:
+                api = api_class()
+                cls._api[name][1] = api
+            return api
+        return super(_APIMeta, cls).__getattribute__(name)
+
+    def register(cls, name, api_class):
+        if (not isinstance(name, basestring) or
+                api_class == cls or
+                not issubclass(api_class, API) or
+                name in _RESERVED or
+                name in cls._api and cls._api[name][0] == api_class):
+            return
+        cls._api[name] = [api_class, None]
+
+class API(with_metaclass(_APIMeta, object)):
+    _config = Config()
+    _api = {}
+    _last_call = None
+
+    def __init__(self, **opts):
+        self._config = self.__class__.config.merge(**opts)
+
+    def config(self, **opts):
+        return self._config.merge(**opts)
+
+    def request(self, function, **opts):
+        if not isinstance(function, basestring):
+            return
+
+        config = self.config(**opts)
+        for k in set(dir(config)) & set(opts.keys()):
+            del opts[k]
+
+        opts['key'] = config.key
+        opts['function'] = function.lower()
         opts['format'] = 'json'
-        opts['language'] = self.config.language
-        params = urllib.urlencode(opts)
-        uri = urlparse(self.config.api_url)
-        conn = httplib.HTTPConnection(uri.netloc)
+        opts['language'] = config.language
+        if config.compression:
+            opts['pack'] = 'gzip'
+
+        params = urlencode(opts)
+        uri = urlparse(config.url)
+        conn = http.client.HTTPConnection(uri.netloc)
         while True:
             result = None
             now = int(round(time.time() * 1000))
-            if self.last_call is not None:
-                if now - self.last_call < self.config.api_delay:
-                    time.sleep(
-                        (self.config.api_delay - self.last_call + now) / 1000.0
-                    )
+            if API._last_call is not None:
+                if now - API._last_call < config.delay:
+                    delay = float(now - API._last_call + config.delay)
+                    time.sleep(delay / 1000.0)
             try:
                 conn.request('GET', uri.path + '?' + params)
                 response = conn.getresponse()
-            except httplib.HTTPException:
-                self.last_call = int(round(time.time() * 1000))
+            except http.client.HTTPException:
+                API._last_call = int(round(time.time() * 1000))
                 return None
             else:
-                self.last_call = int(round(time.time() * 1000))
-                if response.status != httplib.OK:
+                API._last_call = int(round(time.time() * 1000))
+                if response.status != http.client.OK:
                     return None
-                result = json.loads(response.read())
+                data = response.read()
+                if config.compression:
+                    # http://stackoverflow.com/questions/2695152/in-python-how-do-i-decode-gzip-encoding/2695575#2695575
+                    data = zlib.decompress(data, 16+zlib.MAX_WBITS)
+                result = json.loads(data.decode('utf-8'))
                 conn.close()
-            if (isinstance(result, dict) and
-                    'debug' in result and
-                    result['debug']['code'] == 1004):
-                time.sleep(110.0 / 1000.0)
+            if isinstance(result, dict) and 'debug' in result:
+                if result['debug']['code'] == 1004:
+                    # API key limit expired
+                    time.sleep(5)
+                elif result['debug']['code'] == 1001:
+                    # Function not found
+                    raise FunctionNameError(result['debug']['message'], 1001)
+                else:
+                    # Other errors
+                    raise RequestError(result['debug']['message'],
+                                       result['debug']['code'])
             else:
                 return result
 
-    def count_array(self, req, opts={}):
+    def count_array(self, req, **opts):
         opts['page'] = 1
         count = None
         if 'count' in opts:
             count = opts['count']
         opts['count'] = 5
-        result = self.request(req, opts)
+        result = self.request(req, **opts)
         if count is not None:
             opts['count'] = count
         if isinstance(result, dict) and 'found' in result:
@@ -86,7 +130,7 @@ class WikimapiaApi(object):
         else:
             return 0
 
-    def load_array(self, req, key, opts={}):
+    def load_array(self, req, key, **opts):
         total = 0
         loaded = -1
         page_specified = False
@@ -100,7 +144,7 @@ class WikimapiaApi(object):
         arr = []
         while loaded < total:
             opts['page'] = str(page)
-            result = self.request(req, opts)
+            result = self.request(req, **opts)
             if not isinstance(result, dict) or key not in result:
                 return None
             loaded += int(result['count'])

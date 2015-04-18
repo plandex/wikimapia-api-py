@@ -17,3 +17,17 @@ https://packaging.python.org/en/latest/single_source_version.html
 
 http://css.dzone.com/articles/tdd-python-5-minutes
 
+Testing
+=======
+
+python setup.py develop
+pip install sure httpretty
+
+for python 2.7 and above:
+
+python -m unittest discover
+
+for python 2.6 ad prior:
+
+unit2 discover
+

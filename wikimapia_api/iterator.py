@@ -5,7 +5,7 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import object
 from past.builtins import basestring
 
-from .api import WikimapiaApi
+from .api import WikimapiaAPI
 
 LIST_KEYS = {
     'api.getlanguages': 'languages',
