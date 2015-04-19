@@ -2,16 +2,16 @@
 
 # Always prefer setuptools over distutils
 from setuptools import setup
-from codecs import open
 from os import path
+from io import open
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'VERSION')) as f:
-    version = f.read().strip().decode('utf-8')
+with open(path.join(here, 'VERSION'), 'rt') as f:
+    version = f.read().strip()
 
-with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
-    long_description = f.read().decode('utf-8')
+with open(path.join(here, 'DESCRIPTION.rst'), 'rt') as f:
+    long_description = f.read()
 
 setup(
     name='wikimapia_api',
