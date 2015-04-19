@@ -1,6 +1,8 @@
 
 class Error(Exception): pass
 
+class UnimplementedError(Error): pass
+
 class RequestError(Error):
     def __init__(self, message, code):
         super(RequestError, self).__init__(message)

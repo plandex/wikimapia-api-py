@@ -1,33 +1,51 @@
-A sample Python project
-=======================
+Wikimapia API for Python
+========================
 
-A sample project that exists as an aid to the `Python Packaging User Guide
-<https://packaging.python.org>`_'s `Tutorial on Packaging and Distributing
-Projects <https://packaging.python.org/en/latest/distributing.html>`_.
+`Wikimapia`_ is an open-content collaborative map project. This is a python 2.7
+and 3 implementation of wikimapia `api`_.
 
-https://speakerdeck.com/brettcannon/3-compatible
+Installation
+------------
 
-http://pythonhosted.org/six/
+.. code:: bash
+    pip install wikimapia_api
 
-http://python-future.org/compatible_idioms.html
+Usage
+-----
 
-https://github.com/pypa/sampleproject/blob/master/setup.py
+.. code:: python
+    from wikimapia_api import API
 
-https://packaging.python.org/en/latest/single_source_version.html
-
-http://css.dzone.com/articles/tdd-python-5-minutes
+    API.config.key = 'YOUR WIKIMAPIA API KEY'
+    print(API.places[55])
 
 Testing
-=======
+-------
 
-python setup.py develop
-pip install sure httpretty
+Firstly, clone git repository:
 
-for python 2.7 and above:
+.. code:: bash
+    git clone https://github.com/cybernetlab/wikimapia_api_py wikimapia_api
 
-python -m unittest discover
+For developing and testing you should install additional packages:
 
-for python 2.6 ad prior:
+.. code:: bash
+    cd wikimapia_api
+    python setup.py develop
+    pip install sure httpretty
 
-unit2 discover
+To run tests execute:
+
+.. code:: bash
+    python -m unittest discover
+
+.. _Wikimapia: http://wikimapia.org
+.. _api: http://wikimapia.org/api
+
+.. _https://speakerdeck.com/brettcannon/3-compatible
+.. _http://pythonhosted.org/six/
+.. _http://python-future.org/compatible_idioms.html
+.. _https://github.com/pypa/sampleproject/blob/master/setup.py
+.. _https://packaging.python.org/en/latest/single_source_version.html
+.. _http://css.dzone.com/articles/tdd-python-5-minutes
 

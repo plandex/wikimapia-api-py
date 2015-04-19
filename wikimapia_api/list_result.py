@@ -2,57 +2,56 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from builtins import object
+from builtins import object, int
 from past.builtins import basestring
 
-from .api import WikimapiaAPI
+from .api import API
 
-LIST_KEYS = {
-    'api.getlanguages': 'languages',
-    'place.getbyarea': 'places',
-    'place.search': 'places',
-    'place.getnearest': 'places',
-    'category.getall': 'categories'
-}
-
-class WikimapiaIterator(object):
-    def __init__(self, api, function, opts={}):
-        if not isinstance(api, WikimapiaApi):
-            raise TypeError('Wrong WikimapiaApi')
-        if not isinstance(function, basestring) or not function in LIST_KEYS:
-            raise TypeError('Wrong function name')
+class ListResult(object):
+    def __init__(self, api, function, **opts):
+        if not isinstance(api, API):
+            raise TypeError(u'Wrong API')
+        if not isinstance(function, basestring):
+            raise TypeError(u'Wrong function name')
+        self.length = None
         self.total = 0
         self.loaded = -1
         self.buffer = []
 
         self.api = api
         self.function = function
-        self.key = LIST_KEYS[function]
+        self.key = api.result_key(function)
         self.opts = opts
 
-        self.max = self.opts.pop('max', None)
-        self.page_specified = 'page' in self.opts
-        self.page = self.opts.setdefault('page', 1)
-        self.page_size = int(self.opts.setdefault('count', '100'))
+        self.max = self.opts.pop(u'max', None)
+        self.page_specified = u'page' in self.opts
+        self.page = self.opts.setdefault(u'page', 0)
+        self.page_size = int(self.opts.setdefault(u'count', u'100'))
 
     def __iter__(self):
         return self
 
     def __len__(self):
-        if self.max is None:
-            return self.api.count_array(self.function, self.opts)
+        if self.length is not None:
+            return self.length
+        if self.loaded < 0:
+            length = self.api.count_array(self.function, self.opts)
         else:
-            return min(self.max, self.api.count_array(self.function, self.opts))
+            length = self.total
+        if self.max is not None:
+            length = min(self.max, length)
+        self.length = length
+        return length
 
     def __getitem__(self, key):
-        if not isinstance(key, (int, long)):
+        if not isinstance(key, int):
             raise TypeError('Wrong key')
         length = self.__len__()
         if key < 0:
             key += length
         if key < 0 or key > length:
             raise TypeError('Key out of bounds')
-        if key // self.page_size == self.page - 1:
+        if self.page == 0 or key // self.page_size == self.page - 1:
             if not self.buffer:
                 self.__next_page()
             if not self.buffer:
@@ -61,6 +60,7 @@ class WikimapiaIterator(object):
         result = self.__load_page(key // self.page_size + 1)
         if result is None:
             return None
+        self.buffer = result[self.key]
         return self.buffer[key % self.page_size]
 
     def __next__(self):
@@ -71,8 +71,9 @@ class WikimapiaIterator(object):
         return self.buffer.pop(0)
 
     def __load_page(self, page):
+        if page <= 0:
+            page = 1
         self.opts['page'] = str(page)
-        #self.opts['count'] = str(self.page_size)
         result = self.api.request(self.function, self.opts)
         if not isinstance(result, dict) or self.key not in result:
             return None
@@ -86,6 +87,8 @@ class WikimapiaIterator(object):
             result = self.__load_page(self.page)
             if result is None:
                 return
+            if self.loaded < 0:
+                self.loaded = 0
             self.loaded += int(result['count'])
             if self.total == 0:
                 self.total = int(result['found'])

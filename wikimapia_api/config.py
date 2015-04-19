@@ -20,7 +20,7 @@ class Config(object):
                 setattr(self, key, opts[key])
 
     def reset(self):
-        self._key = None
+        self._key = u'example'
         self._url = u'http://api.wikimapia.org/'
         self._language = u'en'
         self._delay = Decimal(3000)
@@ -36,8 +36,8 @@ class Config(object):
     def key(self, value):
         if not isinstance(value, basestring):
             return
-        if value.lower() == 'example':
-            self._key = 'example'
+        if value.lower() == u'example':
+            self._key = u'example'
             return
         value = value.replace(u'-', u'').upper()
         if not _KEY_RE.match(value):

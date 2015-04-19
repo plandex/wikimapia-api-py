@@ -3,6 +3,7 @@ from sure import expect
 from decimal import Decimal
 
 from wikimapia_api.config import Config
+from .helpers import without_resource_warnings
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
@@ -21,11 +22,11 @@ class TestConfig(unittest.TestCase):
         expect(all(x in properties for x in dir(self.config))).to.be.ok
 
     def test_key(self):
-        expect(self.config.key).to.be.none
+        expect(self.config.key).to.equal('example')
         self.config.key = 1000
-        expect(self.config.key).to.be.none
+        expect(self.config.key).to.equal('example')
         self.config.key = 'test'
-        expect(self.config.key).to.be.none
+        expect(self.config.key).to.equal('example')
         self.config.key = '012-3456789-aBcD-eF012'
         expect(self.config.key).to.equal('01234567-89ABCDEF-012')
         self.config.key = 'exAMple'
@@ -40,6 +41,7 @@ class TestConfig(unittest.TestCase):
         self.config.url = 'http://test//'
         expect(self.config.url).to.equal('http://test/')
 
+    @without_resource_warnings
     def test_language(self):
         expect(self.config.language).to.equal('en')
         self.config.language = 1000

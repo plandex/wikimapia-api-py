@@ -6,7 +6,20 @@ from __future__ import (absolute_import, division, print_function,
 from .api import API
 
 class CapabilitiesAPI(API):
-    def get_languages():
-        pass
+    def result_key(self, function):
+        if function == u'api.getlanguages':
+            return u'languages'
 
-API.register('api', CapabilitiesAPI)
+    def valid_params(self, function):
+        return []
+
+    @property
+    def languages(self):
+        if u'languages' in self._cache:
+            return self._cache[u'languages']
+        result = self.request(u'api.getlanguages')
+        if result and u'languages' in result:
+            self._cache[u'languages'] = result[u'languages']
+        return self._cache[u'languages']
+
+API.register(u'languages', CapabilitiesAPI, u'languages')

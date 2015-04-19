@@ -3,8 +3,8 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-from .api import API
-from .capabilities_api import CapabilitiesAPI
-from .category_api import CategoryAPI
-from .place_api import PlaceAPI
-from .street_api import StreetAPI
+from wikimapia_api.api import API
+import wikimapia_api.capabilities_api
+import wikimapia_api.category_api
+import wikimapia_api.place_api
+import wikimapia_api.street_api
