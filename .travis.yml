@@ -7,8 +7,8 @@ python:
   - 3.4
 
 install:
-  - pip install develop
   - pip install -r requirements.txt
+  - pip install -e .
   - pip install coveralls
 
 script:
