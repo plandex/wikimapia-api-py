@@ -49,8 +49,8 @@ To run tests execute:
 .. _https://packaging.python.org/en/latest/single_source_version.html
 .. _http://css.dzone.com/articles/tdd-python-5-minutes
 
-.. |build-status| image:: https://travis-ci.org/samgiles/slumber.svg?branch=master
-   :target: https://travis-ci.org/samgiles/slumber
+.. |build-status| image:: https://travis-ci.org/plandex/wikimapia-api-py.svg?branch=master
+   :target: https://travis-ci.org/plandex/wikimapia-api-py
    :alt: Build status
 .. |coverage-status| image:: https://img.shields.io/coveralls/samgiles/slumber.svg
    :target: https://coveralls.io/r/samgiles/slumber

@@ -5,6 +5,9 @@ from setuptools import setup
 from os import path
 from io import open
 
+install_requires = ['future>=0.14.3']
+tests_require = ['sure>=1.2.10', 'httpretty<=0.8.6']
+
 here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'VERSION'), 'rt') as f:
@@ -20,12 +23,12 @@ setup(
     long_description=long_description,
     author='Alexey Ovchinnikov',
     author_email='alexey.ovchinnikov@yandex.ru',
-    url='https://github.com/cybernetlab/wikimapia_api/',
+    url='https://github.com/plandex/wikimapia-api-py/',
     license='MIT',
     packages=['wikimapia_api'],
-    install_requires=[
-        'future'
-    ],
+    install_requires=install_requires,
+    tests_require=tests_require,
+    test_suite = 'tests',
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Development Status :: 3 - Alpha',
