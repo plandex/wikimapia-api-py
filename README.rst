@@ -8,12 +8,14 @@ Installation
 ------------
 
 .. code-block:: bash
+
     pip install wikimapia_api
 
 Usage
 -----
 
 .. code-block:: python
+
     from wikimapia_api import API
 
     API.config.key = 'YOUR WIKIMAPIA API KEY'
@@ -25,11 +27,13 @@ Testing
 Firstly, clone git repository:
 
 .. code-block:: bash
+
     git clone https://github.com/cybernetlab/wikimapia_api_py wikimapia_api
 
 For developing and testing you should install additional packages:
 
 .. code-block:: bash
+
     cd wikimapia_api
     python setup.py develop
     pip install -r requirements.txt
@@ -37,6 +41,7 @@ For developing and testing you should install additional packages:
 To run tests execute:
 
 .. code-block:: bash
+
     python -m unittest discover
 
 .. _Wikimapia: http://wikimapia.org
