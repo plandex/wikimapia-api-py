@@ -1,5 +1,5 @@
-Wikimapia API for Python
-========================
+Wikimapia API for Python |build-status|
+=======================================
 
 `Wikimapia`_ is an open-content collaborative map project. This is a Python
 (2.7, 3.3 and 3.4) implementation of wikimapia `api`_.

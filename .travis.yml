@@ -10,6 +10,9 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
   - pip install coveralls
+  # Deal with issue on Travis builders re: multiprocessing.Queue :(
+  - "sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm"
+  - pip install jinja2
 
 script:
   - python -m unittest discover
