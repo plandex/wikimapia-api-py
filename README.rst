@@ -1,5 +1,5 @@
-Wikimapia API for Python |build-status|
-=======================================
+Wikimapia API for Python |build-status| |coverage-status|
+=========================================================
 
 `Wikimapia`_ is an open-content collaborative map project. This is a Python
 (2.7, 3.3 and 3.4) implementation of wikimapia `api`_.
@@ -52,9 +52,9 @@ To run tests execute:
 .. |build-status| image:: https://travis-ci.org/plandex/wikimapia-api-py.svg?branch=master
    :target: https://travis-ci.org/plandex/wikimapia-api-py
    :alt: Build status
-.. |coverage-status| image:: https://img.shields.io/coveralls/samgiles/slumber.svg
-   :target: https://coveralls.io/r/samgiles/slumber
+.. |coverage-status| image:: https://coveralls.io/repos/plandex/wikimapia-api-py/badge.svg?branch=master
+   :target: https://coveralls.io/r/plandex/wikimapia-api-py?branch=master
    :alt: Test coverage percentage
-.. |docs| image:: https://readthedocs.org/projects/slumber/badge/?version=latest
-   :target: http://slumber.readthedocs.org/
-   :alt: Documentation
+..  |docs| image:: https://readthedocs.org/projects/slumber/badge/?version=latest
+    :target: http://slumber.readthedocs.org/
+    :alt: Documentation
