@@ -8,10 +8,10 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'VERSION')) as f:
-    version = f.read().strip()
+    version = f.read().strip().decode('utf-8')
 
 with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+    long_description = f.read().decode('utf-8')
 
 setup(
     name='wikimapia_api',
