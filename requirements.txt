@@ -1,0 +1,3 @@
+# These requirements are for DEVELOPMENT ONLY!
+sure
+httpretty

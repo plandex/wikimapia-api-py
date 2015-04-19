@@ -7,13 +7,13 @@ and 3 implementation of wikimapia `api`_.
 Installation
 ------------
 
-.. code:: bash
+.. code-block:: bash
     pip install wikimapia_api
 
 Usage
 -----
 
-.. code:: python
+.. code-block:: python
     from wikimapia_api import API
 
     API.config.key = 'YOUR WIKIMAPIA API KEY'
@@ -24,19 +24,19 @@ Testing
 
 Firstly, clone git repository:
 
-.. code:: bash
+.. code-block:: bash
     git clone https://github.com/cybernetlab/wikimapia_api_py wikimapia_api
 
 For developing and testing you should install additional packages:
 
-.. code:: bash
+.. code-block:: bash
     cd wikimapia_api
     python setup.py develop
     pip install sure httpretty
 
 To run tests execute:
 
-.. code:: bash
+.. code-block:: bash
     python -m unittest discover
 
 .. _Wikimapia: http://wikimapia.org
