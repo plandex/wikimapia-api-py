@@ -32,7 +32,7 @@ For developing and testing you should install additional packages:
 .. code-block:: bash
     cd wikimapia_api
     python setup.py develop
-    pip install sure httpretty
+    pip install -r requirements.txt
 
 To run tests execute:
 
@@ -49,3 +49,12 @@ To run tests execute:
 .. _https://packaging.python.org/en/latest/single_source_version.html
 .. _http://css.dzone.com/articles/tdd-python-5-minutes
 
+.. |build-status| image:: https://travis-ci.org/samgiles/slumber.svg?branch=master
+   :target: https://travis-ci.org/samgiles/slumber
+   :alt: Build status
+.. |coverage-status| image:: https://img.shields.io/coveralls/samgiles/slumber.svg
+   :target: https://coveralls.io/r/samgiles/slumber
+   :alt: Test coverage percentage
+.. |docs| image:: https://readthedocs.org/projects/slumber/badge/?version=latest
+   :target: http://slumber.readthedocs.org/
+   :alt: Documentation
