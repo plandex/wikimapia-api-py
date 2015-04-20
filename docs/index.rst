@@ -6,8 +6,8 @@
 Python Wikimapia API documentation
 ==================================
 
-Wikimapia_ is an open-content collaborative map project. This is a Python
-(2.7, 3.3 and 3.4) implementation of wikimapia api_.
+Wikimapia_ is an open-content collaborative map project. This library is a
+Python (2.7, 3.3 and 3.4) implementation of wikimapia api_.
 
 .. toctree::
    :maxdepth: 2
