@@ -9,9 +9,11 @@ Documentation available in tutorial_.
 Installation
 ------------
 
+Library is in prerelease stage, so use ``--pre`` option:
+
 .. code-block:: bash
 
-    pip install wikimapia_api
+    pip install --pre wikimapia_api
 
 Usage
 -----

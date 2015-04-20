@@ -8,9 +8,9 @@ Installation
 ============
 
 wikimapia_api is available on PyPi and the preferred method of install is
-using Pip::
+using pip. Library is in prerelease stage, so use ``--pre`` option::
 
-  $ pip install wikimapia_api
+  $ pip install --pre wikimapia_api
 
 Configuring
 ===========

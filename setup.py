@@ -25,6 +25,7 @@ setup(
     author_email='alexey.ovchinnikov@yandex.ru',
     url='https://github.com/plandex/wikimapia-api-py/',
     license='MIT',
+    keywords = 'wikimapia api geo map',
     packages=['wikimapia_api'],
     install_requires=install_requires,
     tests_require=tests_require,
