@@ -92,6 +92,15 @@ class CollectionAPI(API):
 
     def sanitize_options(self, params):
         self.sanitize_list_param(params, u'options', _OPTIONS)
+        if u'mercator' in params:
+            if params[u'mercator']:
+                if u'options' in params:
+                    l = set(params[u'options'].split(','))
+                    l.add(u'mercator')
+                    params[u'options'] = ','.join(l)
+                else:
+                    params[u'options'] = u'mercator'
+            del params[u'mercator']
 
     def _search_cache(self, id, append=True):
         try:

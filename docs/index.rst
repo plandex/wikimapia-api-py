@@ -3,15 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to wikimapia_api's documentation!
-=========================================
+Python Wikimapia API documentation
+==================================
 
-Contents:
+`Wikimapia`_ is an open-content collaborative map project. This is a Python
+(2.7, 3.3 and 3.4) implementation of wikimapia `api`_.
 
 .. toctree::
    :maxdepth: 2
 
-
+   tutorial
 
 Indices and tables
 ==================

@@ -7,6 +7,7 @@ Wikimapia API for Python
 TODO
 ----
 
+1. Logging
 2. Doc comments in sources
 3. Enlage test coverage
 

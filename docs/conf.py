@@ -52,16 +52,16 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'wikimapia_api'
-copyright = '2015, Alexey Ovchinnikov'
-author = 'Alexey Ovchinnikov'
+project = u'wikimapia_api'
+copyright = u'2015, Alexey Ovchinnikov'
+author = u'Alexey Ovchinnikov'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.0.dev1'
+version = '0.1'
 # The full version, including alpha/beta/rc tags.
 release = '0.1.0.dev1'
 
@@ -114,7 +114,7 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

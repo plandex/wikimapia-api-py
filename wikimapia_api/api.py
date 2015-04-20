@@ -29,7 +29,7 @@ class _APIMeta(type):
     @config.setter
     def config(cls, value):
         if isinstance(value, Config):
-            cls._config = config
+            cls._config = value
         elif isinstance(value, dict):
             cls._config = cls._config.merge(**value)
 
