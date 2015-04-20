@@ -8,7 +8,7 @@ Installation
 ============
 
 wikimapia_api is available on PyPi and the preferred method of install is
-using Pip.::
+using Pip::
 
   $ pip install wikimapia_api
 
@@ -70,7 +70,7 @@ Languages
 
 To get all available languages:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     languages = API.languages
 
@@ -81,7 +81,7 @@ Categories
 
 To get a list of all categories or categories that matches specific name use:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     categories = API.categories.all()
     search = API.categories.all(name='school')
@@ -92,7 +92,7 @@ To get a list of all categories or categories that matches specific name use:
 
 To get specific category by id:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     category = API.categories[203]
     # or to override options
@@ -104,7 +104,7 @@ Streets
 Wikimapia API provide only one function `Street.Getbyid` to retrieve street
 info. So to get street by id:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     street = API.streets[50]
     # or to specify options
@@ -115,7 +115,7 @@ Places
 
 To get places inside bounding box:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     # specify lon_min, lat_min, lon_max, lat_max
     places = API.places.inside(37.54, 55.72, 37.65, 55.77, category=203)
@@ -123,7 +123,7 @@ To get places inside bounding box:
 
 To get places inside specific tile:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     # specify x, y and z coordinates of tile
     places = API.places.in_tile(4953, 2567, 13, category=203)
@@ -131,7 +131,7 @@ To get places inside specific tile:
 
 To get places nearest specific location:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     # specify lon and lat of location
     places = API.places.nearest(37.54, 55.72, category=203)
@@ -139,7 +139,7 @@ To get places nearest specific location:
 
 To search places near specific location:
 
-.. code-block:: pyhton
+.. code-block:: python
 
     # specify text query, lon and lat of location
     places = API.places.search('school 779', 37.54, 55.72, category=203)
@@ -147,10 +147,10 @@ To search places near specific location:
 
 To get specific place by id:
 
-.. _api: http://wikimapia.org/api
-
-.. code-block:: pyhton
+.. code-block:: python
 
     place = API.place[496457]
     # or to specify options
     place = API.places.get(496457, data_blocks=['main', 'photos'])
+
+.. _api: http://wikimapia.org/api

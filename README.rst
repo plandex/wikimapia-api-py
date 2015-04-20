@@ -1,8 +1,10 @@
 Wikimapia API for Python |build-status| |coverage-status| |docs|
 ================================================================
 
-`Wikimapia`_ is an open-content collaborative map project. This is a Python
-(2.7, 3.3 and 3.4) implementation of wikimapia `api`_.
+Wikimapia_ is an open-content collaborative map project. This is a Python
+(2.7, 3.3 and 3.4) implementation of wikimapia api_.
+
+Documentation available in tutorial_.
 
 Installation
 ------------
@@ -44,8 +46,16 @@ To run tests execute:
 
     python -m unittest discover
 
+TODO
+----
+
+1. Logging
+2. Doc comments in sources
+3. Enlage test coverage
+
 .. _Wikimapia: http://wikimapia.org
 .. _api: http://wikimapia.org/api
+.. _tutorial: http://wikimapia-api-py.readthedocs.org/en/latest/tutorial.html
 
 .. _https://speakerdeck.com/brettcannon/3-compatible
 .. _http://pythonhosted.org/six/
