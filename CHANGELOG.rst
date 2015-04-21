@@ -3,6 +3,11 @@
 Changelog
 =========
 
+0.1.0.dev3
+----------
+
+* Fixed: API.places.inside correctly skips empty result for cross-tile request
+
 0.1.0.dev2
 ----------
 

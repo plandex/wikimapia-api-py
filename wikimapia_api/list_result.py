@@ -113,8 +113,8 @@ class ListsResult(object):
         return sum([len(r) for r in self._results])
 
     def __next__(self):
-        try:
-            return next(self._current)
-        except StopIteration:
-            self._current = next(self._iter)
-            return next(self._current)
+        while True:
+            try:
+                return next(self._current)
+            except StopIteration:
+                self._current = next(self._iter)
