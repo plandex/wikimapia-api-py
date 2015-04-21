@@ -2,8 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from builtins import int
-from past.builtins import basestring
+import six
 
 from .api import API
 from .collection_api import CollectionAPI
@@ -29,7 +28,7 @@ class CategoryAPI(CollectionAPI):
         return self.get_single(u'category.getbyid', id, **params)
 
     def all(self, **opts):
-        if u'name' in opts and not isinstance(opts[u'name'], basestring):
+        if u'name' in opts and not isinstance(opts[u'name'], six.string_types):
             del opts[u'name']
         return self.get_collection(u'category.getall', **opts)
 

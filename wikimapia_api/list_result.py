@@ -2,8 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from builtins import object, int
-from past.builtins import basestring
+import six
 
 from .api import API
 
@@ -11,7 +10,7 @@ class ListResult(object):
     def __init__(self, api, function, **opts):
         if not isinstance(api, API):
             raise TypeError(u'Wrong API')
-        if not isinstance(function, basestring):
+        if not isinstance(function, six.string_types):
             raise TypeError(u'Wrong function name')
         self.length = None
         self.total = 0
@@ -44,7 +43,7 @@ class ListResult(object):
         return length
 
     def __getitem__(self, key):
-        if not isinstance(key, int):
+        if not isinstance(key, six.integer_types):
             raise TypeError('Wrong key')
         length = self.__len__()
         if key < 0:

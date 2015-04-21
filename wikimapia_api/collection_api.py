@@ -2,8 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from builtins import int
-from past.builtins import basestring
+import six
 
 from .api import API
 from .list_result import ListResult
@@ -41,10 +40,10 @@ class CollectionAPI(API):
         return result
 
     def get_single(self, function, id, **params):
-        if not isinstance(function, basestring):
+        if not isinstance(function, six.string_types):
             return None
-        if not isinstance(id, int):
-            if not isinstance(id, basestring):
+        if not isinstance(id, six.integer_types):
+            if not isinstance(id, six.string_types):
                 return None
             try:
                 id = int(id)
@@ -65,7 +64,7 @@ class CollectionAPI(API):
         return item[1]
 
     def get_collection(self, function, **opts):
-        if not isinstance(function, basestring):
+        if not isinstance(function, six.string_types):
             return None
         return ListResult(self, function, **opts)
 
@@ -73,7 +72,7 @@ class CollectionAPI(API):
         if not name in params:
             return
         l = params[name]
-        if isinstance(l, basestring):
+        if isinstance(l, six.string_types):
             l = l.split(',')
         l = [x.strip().lower() for x in l]
         l = set([x for x in l if x in values])

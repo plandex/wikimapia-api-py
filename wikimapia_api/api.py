@@ -2,27 +2,27 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from future.utils import with_metaclass
-from future.moves.urllib.parse import urlparse, urlencode
-from past.builtins import basestring
-from builtins import dict
-import http.client
+import six
 import time
 import json
 import zlib
+from .six.moves.urllib.parse import urlparse, urlencode
+from .six.moves import http_client
 
 from .config import Config
 from .logger import Logger
 from .errors import FunctionNameError, RequestError, UnimplementedError
 
-# Workaround for python.future issue:
-# https://github.com/PythonCharmers/python-future/issues/137
-if not hasattr(http.client, u'OK'):
-    http.client.OK = 200
-
 _RESERVED = [u'config']
 
 class _APIMeta(type):
+    # pylint: disable=W0231
+    def __init__(cls, *args):
+        cls._api = {}
+        cls._config = Config()
+        cls._logger = Logger(cls._config)
+        cls._last_call = None
+
     @property
     def config(cls):
         return cls._config
@@ -49,29 +49,25 @@ class _APIMeta(type):
         return super(_APIMeta, cls).__getattribute__(name)
 
     def register(cls, name, api_class, attr=None):
-        if (not isinstance(name, basestring) or
+        if (not isinstance(name, six.string_types) or
                 api_class == cls or
                 not issubclass(api_class, API) or
                 name in _RESERVED or
                 name in cls._api and cls._api[name][0] == api_class):
             return
-        if not isinstance(attr, basestring):
+        if not isinstance(attr, six.string_types):
             attr = None
         cls._api[name] = [api_class, None, attr]
 
     def clear_entire_cache(cls):
-        for (api_class, api, method) in cls._api.values():
+        for (_, api, _) in six.itervalues(cls._api):
             if api:
                 api.clear_cache()
 
 _VALID_PARAMS = [u'key', u'function', u'format', u'language', u'pack']
 
-class API(with_metaclass(_APIMeta, object)):
-    _config = Config()
-    _logger = Logger(_config)
-    _api = dict()
-    _last_call = None
-
+@six.add_metaclass(_APIMeta)
+class API(object):
     def __init__(self, **opts):
         self._opts = opts
         self.clear_cache()
@@ -90,11 +86,13 @@ class API(with_metaclass(_APIMeta, object)):
     def valid_params(self, function):
         raise UnimplementedError('Illegal call to unimplemented valid_params')
 
-    def request(self, function, params={}):
+    def request(self, function, params=None):
         API.log('function: {0}, params: {1}'.format(function, str(params)),
                 level='debug', src='request')
-        if not isinstance(function, basestring):
+        if not isinstance(function, six.string_types):
             return None
+        if params is None:
+            params = {}
         # merge config
         config = self.config(**params)
         # setup general params
@@ -112,7 +110,7 @@ class API(with_metaclass(_APIMeta, object)):
         # prepare request
         params = urlencode(params)
         uri = urlparse(config.url)
-        conn = http.client.HTTPConnection(uri.netloc)
+        conn = http_client.HTTPConnection(uri.netloc)
         while True:
             result = None
             now = int(round(time.time() * 1000))
@@ -126,12 +124,12 @@ class API(with_metaclass(_APIMeta, object)):
                         level='info', src='request')
                 conn.request(u'GET', request)
                 response = conn.getresponse()
-            except http.client.HTTPException:
+            except http_client.HTTPException:
                 API._last_call = int(round(time.time() * 1000))
                 return None
             else:
                 API._last_call = int(round(time.time() * 1000))
-                if response.status != http.client.OK:
+                if response.status != http_client.OK:
                     return None
                 data = response.read()
                 if config.compression:
@@ -167,9 +165,11 @@ class API(with_metaclass(_APIMeta, object)):
             else:
                 return result
 
-    def count_array(self, function, params={}):
+    def count_array(self, function, params=None):
         API.log('function: {0}, params: {1}'.format(function, str(params)),
                 level='debug', src='count_array')
+        if params is None:
+            params = {}
         params[u'page'] = 1
         count = None
         if u'count' in params:
@@ -183,7 +183,9 @@ class API(with_metaclass(_APIMeta, object)):
         else:
             return 0
 
-    def load_array(self, function, params={}):
+    def load_array(self, function, params=None):
+        if params is None:
+            params = {}
         total = 0
         loaded = -1
         page_specified = False
@@ -192,7 +194,7 @@ class API(with_metaclass(_APIMeta, object)):
             page_specified = True
         else:
             page = 1
-        max = params.pop(u'max', None)
+        max_param = params.pop(u'max', None)
         params.setdefault(u'count', u'100')
         arr = []
         while loaded < total:
@@ -208,6 +210,6 @@ class API(with_metaclass(_APIMeta, object)):
                 total = int(result[u'found'])
             page += 1
             arr += result[key]
-            if page_specified or max is not None and loaded >= max:
+            if page_specified or max_param is not None and loaded >= max_param:
                 break
         return arr

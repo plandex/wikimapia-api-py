@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.1.0.a1
+--------
+
+* For 2-3 compatibility embedded ``six`` is used. Dependency from ``future``
+  package removed
+
 0.1.0.dev3
 ----------
 

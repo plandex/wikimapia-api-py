@@ -2,12 +2,9 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from builtins import object
-from past.builtins import basestring
-
+import six
 import re
 from decimal import Decimal
-
 
 _KEY_RE = re.compile(u'[0-9A-F]*\Z')
 _URL_RE = re.compile(u'\/+\Z')
@@ -39,7 +36,7 @@ class Config(object):
         return self._key
     @key.setter
     def key(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return
         if value.lower() == u'example':
             self._key = u'example'
@@ -55,7 +52,7 @@ class Config(object):
         return self._url
     @url.setter
     def url(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return
         self._url = _URL_RE.sub(u'', value) + u'/'
         return self._url
@@ -65,7 +62,7 @@ class Config(object):
         return self._language
     @language.setter
     def language(self, value):
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return
         self._language = value.lower()
 
@@ -102,7 +99,7 @@ class Config(object):
         return self._log_level
     @log_level.setter
     def log_level(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = value.lower()
         if not value in LOG_LEVELS:
             return
@@ -116,6 +113,6 @@ class Config(object):
         if value is False or value is None:
             self._log = False
             return
-        if not isinstance(value, basestring):
+        if not isinstance(value, six.string_types):
             return
         self._log = value

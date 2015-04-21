@@ -2,7 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from past.builtins import basestring
+import six
 import collections
 import math
 
@@ -179,11 +179,11 @@ class PlaceAPI(CollectionAPI):
             return
         if cats is None:
             cats = []
-        if isinstance(cats, basestring):
+        if isinstance(cats, six.string_types):
             cats = cats.split(',')
         elif not isinstance(cats, collections.Iterable):
             cats = [cats]
-        if isinstance(cats_and, basestring):
+        if isinstance(cats_and, six.string_types):
             cats += cats_and.split(',')
         elif isinstance(cats_and, collections.Iterable):
             cats += cats_and
@@ -204,7 +204,7 @@ class PlaceAPI(CollectionAPI):
             del params[u'categories_or']
         else:
             return
-        if isinstance(cats, basestring):
+        if isinstance(cats, six.string_types):
             cats = cats.split(',')
         elif not isinstance(cats, collections.Iterable):
             cats = [cats]
