@@ -42,8 +42,8 @@ def without_resource_warnings(func):
     workaround for Python3 ResourceWarning
     http://stackoverflow.com/a/21500796
     '''
-    def wrapper(*args):
+    def wrapper(*args, **kw):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', ResourceWarning)
-            func(*args)
+            func(*args, **kw)
     return wrapper if PY3 else func

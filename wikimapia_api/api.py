@@ -12,6 +12,7 @@ import json
 import zlib
 
 from .config import Config
+from .logger import Logger
 from .errors import FunctionNameError, RequestError, UnimplementedError
 
 # Workaround for python.future issue:
@@ -32,6 +33,9 @@ class _APIMeta(type):
             cls._config = value
         elif isinstance(value, dict):
             cls._config = cls._config.merge(**value)
+
+    def log(cls, *args, **kw):
+        cls._logger.log(*args, **kw)
 
     def __getattribute__(cls, name):
         if name != u'_api' and name in cls._api:
@@ -64,6 +68,7 @@ _VALID_PARAMS = [u'key', u'function', u'format', u'language', u'pack']
 
 class API(with_metaclass(_APIMeta, object)):
     _config = Config()
+    _logger = Logger(_config)
     _api = dict()
     _last_call = None
 
@@ -86,6 +91,8 @@ class API(with_metaclass(_APIMeta, object)):
         raise UnimplementedError('Illegal call to unimplemented valid_params')
 
     def request(self, function, params={}):
+        API.log('function: {0}, params: {1}'.format(function, str(params)),
+                level='debug', src='request')
         if not isinstance(function, basestring):
             return None
         # merge config
@@ -114,7 +121,10 @@ class API(with_metaclass(_APIMeta, object)):
                     delay = float(now - API._last_call + config.delay)
                     time.sleep(delay / 1000.0)
             try:
-                conn.request(u'GET', uri.path + u'?' + params)
+                request = uri.path + u'?' + params
+                API.log('GET ' + uri.netloc + request,
+                        level='info', src='request')
+                conn.request(u'GET', request)
                 response = conn.getresponse()
             except http.client.HTTPException:
                 API._last_call = int(round(time.time() * 1000))
@@ -130,20 +140,36 @@ class API(with_metaclass(_APIMeta, object)):
                 result = json.loads(data.decode(u'utf-8'))
                 conn.close()
             if isinstance(result, dict) and u'debug' in result:
+                # Code: 1708. Message: Maximum number (10000) of objects per area reached. Request smaller area to get other places
                 if result[u'debug'][u'code'] == 1004:
                     # API key limit exceeded
+                    API.log('Key limit exceeded', level='warn', src='request')
                     time.sleep(5)
+                elif result[u'debug'][u'code'] == 1012:
+                    # IP address limit has been reached
+                    API.log('IP address limit has been reached',
+                            level='warn', src='request')
+                    time.sleep(60)
                 elif result[u'debug'][u'code'] == 1001:
                     # Function not found
+                    API.log('Wrong API function {0} requested'.format(function),
+                            level='error', src='request')
                     raise FunctionNameError(result[u'debug'][u'message'], 1001)
                 else:
                     # Other errors
-                    raise RequestError(result[u'debug'][u'message'],
-                                       result[u'debug'][u'code'])
+                    c = result[u'debug'][u'code']
+                    m = result[u'debug'][u'message']
+                    API.log(
+                        'Error received. Code: {0}. Message: {1}'.format(c, m),
+                        level='error', src='request'
+                    )
+                    raise RequestError(m, c)
             else:
                 return result
 
     def count_array(self, function, params={}):
+        API.log('function: {0}, params: {1}'.format(function, str(params)),
+                level='debug', src='count_array')
         params[u'page'] = 1
         count = None
         if u'count' in params:

@@ -12,6 +12,8 @@ from decimal import Decimal
 _KEY_RE = re.compile(u'[0-9A-F]*\Z')
 _URL_RE = re.compile(u'\/+\Z')
 
+LOG_LEVELS = ('none', 'error', 'warn', 'info', 'debug')
+
 class Config(object):
     def __init__(self, **opts):
         self.reset()
@@ -25,9 +27,12 @@ class Config(object):
         self._language = u'en'
         self._delay = Decimal(3000)
         self._compression = True
+        self._log_level = 'none'
+        self._log = False
 
     def __dir__(self):
-        return [u'key', u'url', u'language', u'delay', u'compression']
+        return [u'key', u'url', u'language', u'delay', u'compression',
+                u'log_level', u'log']
 
     @property
     def key(self):
@@ -79,7 +84,7 @@ class Config(object):
         return self._compression
     @compression.setter
     def compression(self, value):
-        self._compression = value != False
+        self._compression = value is not False
 
     def merge(self, **opts):
         if not opts:
@@ -92,3 +97,25 @@ class Config(object):
                 setattr(config, key, getattr(self, key))
         return config
 
+    @property
+    def log_level(self):
+        return self._log_level
+    @log_level.setter
+    def log_level(self, value):
+        if isinstance(value, basestring):
+            value = value.lower()
+        if not value in LOG_LEVELS:
+            return
+        self._log_level = value
+
+    @property
+    def log(self):
+        return self._log
+    @log.setter
+    def log(self, value):
+        if value is False or value is None:
+            self._log = False
+            return
+        if not isinstance(value, basestring):
+            return
+        self._log = value

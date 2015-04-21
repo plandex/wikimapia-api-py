@@ -51,7 +51,7 @@ To run tests execute:
 TODO
 ----
 
-1. Logging
+1. Logging (in progress)
 2. Doc comments in sources
 3. Enlage test coverage
 

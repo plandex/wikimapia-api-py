@@ -6,6 +6,8 @@ from wikimapia_api.config import Config
 from .helpers import without_resource_warnings
 
 class TestConfig(unittest.TestCase):
+    # TODO: test log and log_level
+
     def setUp(self):
         self.config = Config()
 
@@ -18,7 +20,8 @@ class TestConfig(unittest.TestCase):
         expect(config.delay).to.equal(Decimal(5000))
 
     def test_dir(self):
-        properties = ['key', 'url', 'language', 'delay', 'compression']
+        properties = ['key', 'url', 'language', 'delay', 'compression',
+                      'log', 'log_level']
         expect(all(x in properties for x in dir(self.config))).to.be.ok
 
     def test_key(self):

@@ -4,7 +4,7 @@ from sure import expect
 
 from wikimapia_api.api import API
 import wikimapia_api.place_api
-from wikimapia_api.list_result import ListResult
+from wikimapia_api.list_result import ListResult, ListsResult
 from .helpers import mock_request, mock_list_request, without_resource_warnings
 
 class TestPlaceAPI(unittest.TestCase):
@@ -25,11 +25,11 @@ class TestPlaceAPI(unittest.TestCase):
     @httpretty.activate
     @without_resource_warnings
     def test_inside(self):
+        # TODO: full testing here
         mock_list_request('place.getbyarea')
         l = API.places.inside(10, 20, 30, 40)
-        expect(l).to.be.a(ListResult)
-        expect(len(l)).to.equal(3)
-        expect(l[0]['id']).to.equal(1691851)
+        expect(l).to.be.a(ListsResult)
+        expect(len(l)).to.equal(810)
 
     @httpretty.activate
     @without_resource_warnings

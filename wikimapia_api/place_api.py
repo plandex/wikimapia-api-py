@@ -4,14 +4,41 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from past.builtins import basestring
 import collections
+import math
 
 from .api import API
 from .collection_api import CollectionAPI
+from .list_result import ListsResult
 
 _LIST_FUNCTIONS = [u'place.getbyarea', u'place.getnearest', u'place.search']
 _LIST_DATA_BLOCKS = [u'main', u'geometry', u'edit', u'location', u'photos',
                      u'comments', u'translate']
 _NEAREST_DATA_BLOCKS = [u'geometry', u'location']
+
+TILE_ZOOM = 8
+
+def coo2tile(lon, lat, zoom):
+    latr = math.radians(lat)
+    n = 2.0 ** zoom
+    tan = math.tan(latr)
+    cos = math.cos(latr)
+    xtile = int((lon + 180.0) / 360.0 * n)
+    ytile = int((1.0 - math.log(tan + (1 / cos)) / math.pi) / 2.0 * n)
+    return (xtile, ytile)
+
+def tile2coo(xtile, ytile, zoom):
+    n = 2.0 ** zoom
+    lon = xtile / n * 360.0 - 180.0
+    latr = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
+    lat = math.degrees(latr)
+    return (lat, lon)
+
+def tile2lon(xtile, zoom):
+    return xtile / (2.0 ** zoom) * 360.0 - 180.0
+
+def tile2lat(ytile, zoom):
+    latr = math.atan(math.sinh(math.pi * (1 - 2 * ytile / (2.0 ** zoom))))
+    return math.degrees(latr)
 
 class PlaceAPI(CollectionAPI):
     def __getitem__(self, key):
@@ -46,9 +73,14 @@ class PlaceAPI(CollectionAPI):
         self.sanitize_data_blocks(params, _LIST_DATA_BLOCKS)
         self.sanitize_category(params)
         self.sanitize_category_or(params)
-        params[u'bbox'] = u'{0},{1},{2},{3}'.format(lon_min, lat_min,
-                                                    lon_max, lat_max)
-        return self.get_collection(u'place.getbyarea', **params)
+        tiles = self.tiles(lon_min, lat_min, lon_max, lat_max)
+        requests = []
+        for tile in tiles:
+            params[u'bbox'] = u'{0},{1},{2},{3}'.format(*tile)
+            requests.append(self.get_collection(u'place.getbyarea', **params))
+        if len(requests) == 1:
+            return requests[0]
+        return ListsResult(requests)
 
     def in_tile(self, x, y, z, **params):
         self.sanitize_options(params)
@@ -81,6 +113,39 @@ class PlaceAPI(CollectionAPI):
 
     def update(self):
         pass
+
+    def tiles(self, x1, y1, x2, y2):
+        (tx1, ty1) = coo2tile(x1, y1, TILE_ZOOM)
+        (tx2, ty2) = coo2tile(x2, y2, TILE_ZOOM)
+        if tx1 == tx2:
+            if x1 > x2:
+                x1, x2 = x2, x1
+            xline = [(x1, x2)]
+        else:
+            if tx1 > tx2:
+                tx1, tx2 = tx2, tx1
+            xline = []
+            for i in range(tx1, tx2+1):
+                xx1 = x1 if i == tx1 else tile2lon(i, TILE_ZOOM)
+                xx2 = x2 if i == tx2+1 else tile2lon(i+1, TILE_ZOOM)
+                xline.append((xx1, xx2))
+        if ty2 == ty1:
+            if y1 > y2:
+                y1, y2 = y2, y1
+            yline = [(y1, y2)]
+        else:
+            if ty1 > ty2:
+                ty1, ty2 = ty2, ty1
+            yline = []
+            for i in reversed(range(ty1, ty2+1)):
+                yy1 = y1 if i == ty2+1 else tile2lat(i+1, TILE_ZOOM)
+                yy2 = y2 if i == ty1 else tile2lat(i, TILE_ZOOM)
+                yline.append((yy1, yy2))
+        result = []
+        for x in xline:
+            for y in yline:
+                result.append((x[0], y[0], x[1], y[1]))
+        return result
 
     def sanitize_distance(self, params):
         if not u'distance' in params:

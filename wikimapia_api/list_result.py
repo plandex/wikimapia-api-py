@@ -51,11 +51,12 @@ class ListResult(object):
             key += length
         if key < 0 or key > length:
             raise TypeError('Key out of bounds')
-        if self.page == 0 or key // self.page_size == self.page - 1:
+        #print(self.page, key, self.page_size)
+        if self.page == 0 or key // self.page_size == self.page - 2:
             if not self.buffer:
                 self.__next_page()
-            if not self.buffer:
-                return None
+                if not self.buffer:
+                    return None
             return self.buffer[key]
         result = self.__load_page(key // self.page_size + 1)
         if result is None:
@@ -66,8 +67,8 @@ class ListResult(object):
     def __next__(self):
         if not self.buffer:
             self.__next_page()
-        if not self.buffer:
-            raise StopIteration
+            if not self.buffer:
+                raise StopIteration
         return self.buffer.pop(0)
 
     def __load_page(self, page):
@@ -92,7 +93,28 @@ class ListResult(object):
             self.loaded += int(result['count'])
             if self.total == 0:
                 self.total = int(result['found'])
+            if self.page == 0:
+                self.page = 1
             self.page += 1
             self.buffer += result[self.key]
         if self.page_specified:
             self.max = self.loaded
+
+class ListsResult(object):
+    def __init__(self, results):
+        self._results = results
+        self._current = iter([])
+        self._iter = iter(results)
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return sum([len(r) for r in self._results])
+
+    def __next__(self):
+        try:
+            return next(self._current)
+        except StopIteration:
+            self._current = next(self._iter)
+            return next(self._current)
