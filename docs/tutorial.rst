@@ -16,7 +16,7 @@ Configuring
 ===========
 
 wikimapia_api have several configuration options. You can set these options
-for entire library and then override any of then in the specific API calls.
+for entire library and then override any of them in the specific API calls.
 To configure library, use ``API.config`` as follows:
 
 .. code-block:: python
@@ -60,7 +60,7 @@ spherical longtitude and latitude coordinates. To get mercator coordinates
 (projected to flat map space) specify ``mercator=True`` or
 ``options='mercator'`` in function call.
 
-Many functions returns a lot of data. To specify unwanted traffic you can
+Many functions returns a lot of data. To prevent unwanted traffic you can
 specify necessary data blocks with ``data_blocks='main, geometry'`` or
 ``data_blocks=['main', 'geometry']``. For full list of available data blocks
 for each functioin refer to api_ documentation.
@@ -129,7 +129,7 @@ To get places inside specific tile:
     places = API.places.in_tile(4953, 2567, 13, category=203)
     print(len(places))
 
-To get places nearest specific location:
+To get places nearest to specific location:
 
 .. code-block:: python
 
