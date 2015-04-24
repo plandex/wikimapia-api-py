@@ -127,7 +127,7 @@ class PlaceAPI(CollectionAPI):
             xline = []
             for i in range(tx1, tx2+1):
                 xx1 = x1 if i == tx1 else tile2lon(i, TILE_ZOOM)
-                xx2 = x2 if i == tx2+1 else tile2lon(i+1, TILE_ZOOM)
+                xx2 = x2 if i == tx2 else tile2lon(i+1, TILE_ZOOM)
                 xline.append((xx1, xx2))
         if ty2 == ty1:
             if y1 > y2:
@@ -138,7 +138,7 @@ class PlaceAPI(CollectionAPI):
                 ty1, ty2 = ty2, ty1
             yline = []
             for i in reversed(range(ty1, ty2+1)):
-                yy1 = y1 if i == ty2+1 else tile2lat(i+1, TILE_ZOOM)
+                yy1 = y1 if i == ty2 else tile2lat(i+1, TILE_ZOOM)
                 yy2 = y2 if i == ty1 else tile2lat(i, TILE_ZOOM)
                 yline.append((yy1, yy2))
         result = []
