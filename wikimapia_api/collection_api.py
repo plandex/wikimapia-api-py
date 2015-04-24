@@ -85,7 +85,7 @@ class CollectionAPI(API):
         self.sanitize_list_param(params, u'data_blocks', blocks)
         if not u'data_blocks' in params:
             return
-        if len(params[u'data_blocks']) == len(blocks):
+        if len(params[u'data_blocks']) == len(_DATA_BLOCKS):
             del params[u'data_blocks']
             return
 
